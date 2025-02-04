@@ -26,7 +26,7 @@ def calculate_market_metrics(initial_yes: float, initial_no: float,
     
     if bet_position == "YES":
         # Базовый процент 50%, увеличивается с ростом ставки, но не более 80%
-        win_percentage = min(0.9, 0.1 + 0.1 * math.log(1 + bet_amount/100))
+        win_percentage = min(0.9, 0.2 + 0.1 * math.log(1 + bet_amount/100))
         max_possible_win = initial_no * win_percentage
         # Рассчитываем потенциальный выигрыш
         calculated_win = bet_amount * (initial_no / initial_yes)
@@ -34,7 +34,7 @@ def calculate_market_metrics(initial_yes: float, initial_no: float,
         potential_win = float(f"{min(calculated_win, max_possible_win):.2f}")
         available_liquidity = initial_no - potential_win
     else:
-        win_percentage = min(0.9, 0.1 + 0.1 * math.log(1 + bet_amount/100))
+        win_percentage = min(0.9, 0.2 + 0.1 * math.log(1 + bet_amount/100))
         max_possible_win = initial_yes * win_percentage
         # Рассчитываем потенциальный выигрыш
         calculated_win = bet_amount * (initial_yes / initial_no)
