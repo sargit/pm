@@ -18,6 +18,12 @@ class MarketState:
     
     def __post_init__(self):
         self.bets_history = self.bets_history or []
+def dynamic_k(initial_yes, initial_no):
+    """
+    Функция для расчета коэффициента k, который растет по мере увеличения общего пула ликвидности.
+    """
+    total_liquidity = initial_yes + initial_no
+    return 0.05 + 0.05 * math.log10(total_liquidity)  # k увеличивается с ростом ликвидности
 
 def calculate_market_metrics(initial_yes: float, initial_no: float, 
                            bet_amount: float, bet_position: str = "YES") -> Dict:
@@ -25,20 +31,24 @@ def calculate_market_metrics(initial_yes: float, initial_no: float,
     new_no = initial_no + bet_amount if bet_position == "NO" else initial_no
     
     if bet_position == "YES":
-        # Базовый процент 50%, увеличивается с ростом ставки, но не более 80%
-        win_percentage = min(0.9, 0.2 + 0.1 * math.log(1 + bet_amount/100))
+        # win_percentage = min(0.9, 0.2 + 0.1 * math.log(1 + bet_amount/initial_no))
+        win_percentage = min(
+            0.9, 
+            0.2 + 0.1 * math.log(1 + bet_amount / math.sqrt(initial_yes * initial_no))
+            
+        )
         max_possible_win = initial_no * win_percentage
-        # Рассчитываем потенциальный выигрыш
         calculated_win = bet_amount * (initial_no / initial_yes)
-        # Берем минимальное из двух значений
         potential_win = float(f"{min(calculated_win, max_possible_win):.2f}")
         available_liquidity = initial_no - potential_win
     else:
-        win_percentage = min(0.9, 0.2 + 0.1 * math.log(1 + bet_amount/100))
+        # win_percentage = min(0.9, 0.2 + 0.1 * math.log(1 + bet_amount/initial_yes))
+        win_percentage = min(
+            0.9, 
+            0.2 + 0.1 * math.log(1 + bet_amount / math.sqrt(initial_yes * initial_no))
+        )
         max_possible_win = initial_yes * win_percentage
-        # Рассчитываем потенциальный выигрыш
         calculated_win = bet_amount * (initial_yes / initial_no)
-        # Берем минимальное из двух значений
         potential_win = float(f"{min(calculated_win, max_possible_win):.2f}")
         available_liquidity = initial_yes - potential_win
     
