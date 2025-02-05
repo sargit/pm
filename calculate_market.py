@@ -61,7 +61,7 @@ def calculate_market_metrics(initial_yes: float, initial_no: float,
     }
 
 def show_market_interface():
-    st.title("Калькулятор рынка")
+    st.title("Калькулятор рынка?")
     
     # Инициализация состояния
     if 'market_state' not in st.session_state:
